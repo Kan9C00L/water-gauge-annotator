@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Unknown 区域批量标注</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <section class="panel import-panel">
+          <div class="panel-title">数据导入</div>
+          <label class="file-button primary-file" data-icon="IMG">
+            <input id="imageInput" type="file" accept="image/*" multiple>
+            <span>导入图片</span>
+          </label>
+          <button id="folderImport" class="file-button folder-import" type="button" data-icon="DIR" title="导入文件夹，并自动将 JSON 保存回原文件夹">
+            导入文件夹（自动保存json）
+          </button>
+          <input id="folderInput" type="file" accept="image/*,.json,application/json" multiple webkitdirectory directory hidden>
+          <button id="chooseOutput" type="button" data-icon="OUT">设置保存目录</button>
+          <div id="outputPath" class="path-hint">导入文件夹后会自动保存同名 JSON；单张图片仍可设置保存目录</div>
+        </section>
+
+        <section class="panel grow queue-panel">
+          <div class="panel-title row-title">
+            <span>图片队列</span>
+            <span id="queueCount" class="count-pill">0 张</span>
+          </div>
+          <div id="fileList" class="file-list empty">还没有图片</div>
+        </section>
+      </aside>
+
+      <section class="stage">
+        <header class="toolbar">
+          <div class="tool-row">
+            <div class="tool-group">
+              <span class="group-label">标注模式</span>
+              <button id="selectMode" type="button" data-icon="V" title="选择并编辑选区">选择</button>
+              <button id="penMode" type="button" data-icon="P" title="逐点绘制多边形">多边形</button>
+              <button id="freehandMode" type="button" data-icon="B" title="按住鼠标自由绘制">自由笔</button>
+              <button id="smearMode" type="button" data-icon="M" title="圆形笔刷涂抹生成闭合区域">涂抹</button>
+              <button id="followPenMode" type="button" data-icon="G" title="点击开始，移动鼠标描边后自动闭合">描边</button>
+              <button id="samMode" type="button" data-icon="SAM" title="SAM2.1 辅助分割">SAM2.1</button>
+              <button id="samPointMode" type="button" data-icon="PT" title="SAM2.1 提示点" hidden>提示点</button>
+              <button id="samBoxMode" type="button" data-icon="BOX" title="SAM2.1 矩形框" hidden>矩形框</button>
+              <button id="eraserMode" type="button" data-icon="E" title="擦除笔画经过的区域">橡皮</button>
+            </div>
+            <div class="tool-group strong-group">
+              <span class="group-label">自动标注</span>
+              <button id="autoCurrent" type="button" data-icon="R" title="自动标注当前图片">自动标注</button>
+              <button id="autoAll" type="button" data-icon="ALL" title="从当前图片开始批量标注">批量标注</button>
+            </div>
+            <div class="tool-group water-gauge-group">
+              <span class="group-label">水尺</span>
+              <button id="waterGaugeMode" type="button" data-icon="WG" title="显示水尺标注功能">水尺标注</button>
+              <span id="waterGaugeActions" class="water-gauge-actions" hidden>
+                <button id="waterGaugeAuto" type="button" data-icon="AUTO" title="YOLO 检测字符后用 SAM 生成水尺字符标注">全自动标注</button>
+                <button id="waterGaugeClick" type="button" data-icon="PT" title="点击字符后自动识别并生成水尺标注">点击自动识别并标注水尺</button>
+              </span>
+            </div>
+            <div class="tool-group">
+              <span class="group-label">图片浏览</span>
+              <button id="toggleOverlay" type="button" data-icon="O" title="查看原图或标注">原图</button>
+              <button id="prevImage" type="button" data-icon="A" title="上一张图片">上张</button>
+              <button id="nextImage" type="button" data-icon="D" title="下一张图片">下张</button>
+            </div>
+            <div class="tool-group">
+              <span class="group-label">视图</span>
+              <button id="zoomOut" type="button" data-icon="-" title="缩小图片">缩小</button>
+              <button id="zoomIn" type="button" data-icon="+" title="放大图片">放大</button>
+              <button id="fitView" type="button" data-icon="F" title="适应画布">适应</button>
+              <button id="actualSize" type="button" data-icon="1:1" title="100% 显示">1:1</button>
+            </div>
+            <div class="tool-group">
+              <span class="group-label">文件</span>
+              <button id="exportCurrent" type="button" data-icon="S" title="导出当前图片 JSON">当前</button>
+              <button id="exportAll" type="button" data-icon="ZIP" title="导出全部图片 JSON">全部</button>
+            </div>
+            <div class="tool-group">
+              <span class="group-label">编辑</span>
+              <button id="deleteShape" type="button" data-icon="DEL" title="删除当前点或所有已选区域">删除</button>
+              <button id="copyShape" type="button" data-icon="C" title="复制当前闭合区域">复制</button>
+              <button id="pasteNext" type="button" data-icon="V+" title="粘贴到当前图片">粘贴</button>
+              <button id="clearShapes" type="button" data-icon="CLR" title="清空当前图片标注">清空</button>
+              <button id="undoAction" type="button" data-icon="Z" title="撤销">撤销</button>
+              <button id="redoAction" type="button" data-icon="Y" title="重做">重做</button>
+              <button id="shortcutHelp" type="button" data-icon="?" title="查看快捷键">帮助</button>
+            </div>
+          </div>
+          <div class="stage-meta">
+            <div id="currentImageInfo" class="image-counter">第 0 / 0 张</div>
+            <div id="zoomInfo" class="image-counter">100%</div>
+            <div id="status" class="status">等待选择图片</div>
+          </div>
+        </header>
+
+        <div class="canvas-wrap">
+          <canvas id="imageCanvas"></canvas>
+          <canvas id="overlayCanvas"></canvas>
+          <div id="emptyState" class="empty-state">导入水下船体图片后开始标注</div>
+        </div>
+      </section>
+
+      <aside class="controls">
+        <section class="panel annotation-panel">
+          <div class="panel-title">手动标注</div>
+          <label class="field-row">
+            标注名称
+            <input id="labelName" type="text" value="unknown" autocomplete="off">
+          </label>
+          <div class="button-row">
+            <button id="applyLabel" type="button" title="将输入的名称应用到当前选区；多选时批量应用">应用名称</button>
+            <button id="useSelectedLabel" type="button">沿用当前名称</button>
+          </div>
+          <label class="check-row">
+            <input id="appendToSelected" type="checkbox">
+            <span>新笔画追加到当前区域</span>
+          </label>
+          <div id="activeShapeInfo" class="hint">当前未选择区域</div>
+        </section>
+
+        <section class="panel object-panel">
+          <div class="panel-title row-title">
+            <span>区域对象</span>
+            <span id="shapeCount" class="count-pill">0 个</span>
+          </div>
+          <div id="shapeList" class="shape-list empty">当前图片还没有区域</div>
+        </section>
+
+        <section class="panel auto-panel">
+          <div class="panel-title">自动标注</div>
+          <label class="range-row">
+            识别强度
+            <input id="qualitySensitivity" type="range" min="0.42" max="0.58" step="0.01" value="0.50">
+            <output id="qualitySensitivityValue">0.50</output>
+          </label>
+          <p class="param-note">调大：更容易标出暗黑、欠曝光、看不清船漆的区域。调小：只保留更黑、更确定的 unknown。</p>
+          <label class="range-row">
+            边缘暗角
+            <input id="edgeFocus" type="range" min="0.08" max="0.24" step="0.01" value="0.16">
+            <output id="edgeFocusValue">0.16</output>
+          </label>
+          <p class="param-note">调大：更关注画面边缘的黑边和暗角。调小：减少边缘误标，保留明显暗区。</p>
+          <label class="range-row">
+            最小区域
+            <input id="minArea" type="range" min="0.008" max="0.025" step="0.001" value="0.014">
+            <output id="minAreaValue">1.4%</output>
+          </label>
+          <p class="param-note">调大：过滤小碎块，结果更干净。调小：保留小区域，但噪点可能更多。</p>
+          <div class="hint">自动标注会优先绕开手动区域；相交的暗区仍会按原规则保留 unknown，允许重叠。</div>
+          <div class="hint">四个角的暗黑、低可见区域会优先保留；角落清晰时不会被强制标注。</div>
+        </section>
+
+        <section class="panel curve-panel">
+          <div class="panel-title">绘制设置</div>
+          <label class="range-row">
+            曲线简化
+            <input id="simplify" type="range" min="1" max="5" step="1" value="2">
+            <output id="simplifyValue">2</output>
+          </label>
+          <p class="param-note">影响自动轮廓与跟随描边。调大：边界更顺滑、点更少；调小：保留更多边界细节。</p>
+          <label class="range-row">
+            最大点数
+            <input id="maxPoints" type="range" min="0" max="100" step="1" value="20">
+            <input id="maxPointsValue" class="value-input" type="number" min="0" max="100" step="1" value="20" autocomplete="off">
+          </label>
+          <p class="param-note">默认 20。限制自动轮廓与手动画笔生成的点数，便于后续逐点拖动编辑。</p>
+          <label class="range-row">
+            涂抹直径
+            <input id="brushSize" type="range" min="8" max="500" step="2" value="36">
+            <input id="brushSizeValue" class="value-input" type="number" min="8" max="500" step="2" value="36" autocomplete="off">
+          </label>
+          <p class="param-note">调大：一次涂抹覆盖更宽的 unknown。调小：适合精细修边。涂抹模式下滚动鼠标滚轮可实时调整。</p>
+          <label class="range-row">
+            滚轮灵敏度
+            <input id="brushWheelSensitivity" type="range" min="1" max="40" step="1" value="8">
+            <output id="brushWheelSensitivityValue">8</output>
+          </label>
+          <p class="param-note">控制涂抹模式下每次滚轮改变的涂抹直径大小。</p>
+          <label class="range-row">
+            透明度
+            <input id="opacity" type="range" min="0.18" max="0.55" step="0.01" value="0.32">
+            <output id="opacityValue">0.32</output>
+          </label>
+          <p class="param-note">调大：标注覆盖更明显。调小：更容易检查原图细节。</p>
+          <div class="hint">图片缩放：按住 Ctrl 后滚动鼠标滚轮。跟随描边：点一下开始，移动鼠标描边，再点一下或按 Enter 自动闭合。</div>
+        </section>
+
+        <section class="panel json-panel">
+          <div class="panel-title">当前 JSON</div>
+          <textarea id="jsonPreview" spellcheck="false" readonly></textarea>
+        </section>
+      </aside>
+    </main>
+
+    <div id="shortcutModal" class="modal-backdrop" hidden>
+      <section class="shortcut-modal" role="dialog" aria-modal="true" aria-labelledby="shortcutTitle">
+        <header>
+          <h2 id="shortcutTitle">快捷键</h2>
+          <button id="closeShortcuts" type="button">关闭</button>
+        </header>
+        <div class="shortcut-grid">
+          <span>Ctrl + O</span><span>选择图片</span>
+          <span>Ctrl + Shift + O</span><span>导入文件夹并自动保存 JSON</span>
+          <span>Ctrl + S</span><span>导出当前 JSON</span>
+          <span>Ctrl + Shift + S</span><span>导出全部 JSON</span>
+          <span>Ctrl + Z</span><span>撤销；描边进行中取消当前描边</span>
+          <span>Ctrl + Y</span><span>重做</span>
+          <span>Ctrl + E</span><span>将输入名称应用到当前选区；多选时批量改名</span>
+          <span>Ctrl + C</span><span>复制当前闭合区域</span>
+          <span>Ctrl + V</span><span>粘贴到当前图片</span>
+          <span>R</span><span>自动标注当前图片</span>
+          <span>Shift + R</span><span>从当前图片开始批量标注</span>
+          <span>A / D</span><span>上一张 / 下一张</span>
+          <span>← / →</span><span>上一张 / 下一张</span>
+          <span>Space</span><span>原图 / 标注对比</span>
+          <span>F</span><span>适应窗口</span>
+          <span>+ / -</span><span>放大 / 缩小</span>
+          <span>L</span><span>编辑当前选区名称</span>
+          <span>[ / ]</span><span>切换上一个 / 下一个区域</span>
+          <span>V</span><span>选择模式</span>
+          <span>P</span><span>多边形模式</span>
+          <span>B</span><span>自由绘制模式</span>
+          <span>M</span><span>涂抹模式：按住鼠标用圆形笔刷涂出闭合区域</span>
+          <span>G</span><span>跟随描边模式</span>
+          <span>S</span><span>进入 SAM2.1 后选择提示点或矩形框工具</span>
+          <span>F（SAM 模式）</span><span>确认当前分割并输入标注名称</span>
+          <span>Ctrl + Z（SAM 模式）</span><span>撤销最后一个提示点或当前矩形框</span>
+          <span>E</span><span>橡皮擦模式</span>
+          <span>Ctrl + 滚轮</span><span>以鼠标位置缩放图片</span>
+          <span>中键 / 右键拖动</span><span>平移图片视图</span>
+          <span>Ctrl + 0</span><span>适应窗口</span>
+          <span>Ctrl + 1</span><span>100% 显示</span>
+          <span>Ctrl + + / -</span><span>放大 / 缩小</span>
+          <span>Enter</span><span>完成手动画笔多边形</span>
+          <span>Esc</span><span>取消绘制或关闭弹窗</span>
+          <span>Delete / Backspace</span><span>删除当前点；未选点时删除所有已选区域</span>
+          <span>Shift + 点击区域对象</span><span>连续选择多个区域对象</span>
+          <span>F1 / ? / H</span><span>打开快捷键面板</span>
+        </div>
+      </section>
+    </div>
+
+    <div id="labelModal" class="modal-backdrop" hidden>
+      <section class="label-modal" role="dialog" aria-modal="true" aria-labelledby="labelTitle">
+        <header>
+          <h2 id="labelTitle">标注名称</h2>
+          <button id="cancelLabel" type="button">取消</button>
+        </header>
+        <label class="label-field">
+          名称
+          <input id="modalLabelName" type="text" autocomplete="off">
+        </label>
+        <label class="label-field">
+          历史名称
+          <select id="labelHistorySelect"></select>
+        </label>
+        <div id="labelHistoryChips" class="label-chips"></div>
+        <div class="modal-actions">
+          <button id="confirmLabel" type="button">确认名称</button>
+        </div>
+      </section>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
