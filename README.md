@@ -13,6 +13,8 @@
 - **点击自动识别**：点击图片目标位置，SAM 生成区域，YOLO11 识别类别。
 - **灵活的人工编辑**：支持拖拽控制点、线框吸附、撤销/重做、删除、复制粘贴。
 - **自动保存**：直接读写本地文件夹，实时将结果保存为 LabelMe 格式的 JSON，无需手动导出。
+<img width="1790" height="182" alt="fe54889c60c44955413f1c30ebb8c409" src="https://github.com/user-attachments/assets/f9d04a94-f120-48b2-b828-d322c7e66e67" />
+
 
 ## 🛠️ 技术栈
 - **前端**：原生 JavaScript、Canvas、CSS3
