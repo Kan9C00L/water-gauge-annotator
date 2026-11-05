@@ -26,7 +26,8 @@
 3. 双击打开 `index.html` 即可在浏览器中标注。
 
 ## 📦 模型权重下载
-请前往 [Releases](把你的Releases链接粘贴在这里) 页面下载 `best.pt` 模型权重，并将其放置在项目根目录下。
+请前往 [[Releases](https://github.com/Kan9C00L/water-gauge-annotator/releases/download/v1.0.0/yolo11_water_gauge.pt)](把你的Releases链接粘贴在这里) 页面下载 `best.pt` 模型权重，并将其放置在项目根目录下。
+sam2.1模型可自行下载
 
 ## 📄 声明
 本项目仅供学习与研究使用。使用的 YOLO11 模型遵循 AGPL-3.0 协议，SAM2.1 遵循 Apache 2.0 协议。
