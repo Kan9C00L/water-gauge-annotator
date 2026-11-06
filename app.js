@@ -86,7 +86,7 @@ const defaultParams = {
   opacity: 0.32
 };
 
-const WATER_GAUGE_SERVICE = "http://127.0.0.1:8010";
+const WATER_GAUGE_SERVICE = window.APP_CONFIG?.waterGaugeService || "http://127.0.0.1:8010";
 
 const folderMemory = {
   dbName: "unknownAnnotatorStorage",
