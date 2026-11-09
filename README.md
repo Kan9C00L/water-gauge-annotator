@@ -31,10 +31,11 @@
 - **自动保存**：直接读写本地文件夹，实时将结果保存为 LabelMe 格式的 JSON，无需手动导出。
 
 
-![演示效果](./demo.gif)
-
-![演示效果](./demo1.gif)
-
+<div align="center">
+  <img src="./demo.gif" alt="自动标注演示" width="70%">
+  <br><br>
+  <img src="./demo1.gif" alt="人工修正演示" width="70%">
+</div>
 
 
 ## 🛠️ 技术栈
