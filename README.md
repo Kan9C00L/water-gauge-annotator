@@ -170,13 +170,13 @@ uvicorn backend.main:app --host 127.0.0.1 --port 8010 --reload
 
 
 ### 基础架构
-- **Model**: YOLO11m (Ultralytics)
+- **Model**: YOLO11n (Ultralytics)
 - **Task**: Object Detection
 - **Input Size**: 768×768
 - **Classes**: 11
 
 ### 训练配置
-- **Pretrained Weights**: yolo11m.pt (fine-tuned to n-scale)
+- **Pretrained Weights**: yolo11n.pt (fine-tuned to n-scale)
 - **Optimizer**: AdamW (lr0≈0.00182, lr_f≈0.00182, weight_decay≈0.00053)
 - **Epochs**: 500 (patience=35)
 - **Batch Size**: 16
