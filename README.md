@@ -71,7 +71,7 @@ uvicorn backend.main:app --host 127.0.0.1 --port 8010 --reload
 ## 模型说明 / Model Details
 
 ### 基础架构
-- **Model**: YOLO11n (Ultralytics)
+- **Model**: YOLO11m (Ultralytics)
 - **Task**: Object Detection
 - **Input Size**: 768×768
 - **Classes**: 11
@@ -85,7 +85,6 @@ uvicorn backend.main:app --host 127.0.0.1 --port 8010 --reload
 - **Framework**: Ultralytics 8.4.90
 
 
-sam2.1分割模型可自行下载
 
 ## 📄 声明
 本项目仅供学习与研究使用。使用的 YOLO11 模型遵循 AGPL-3.0 协议，SAM2.1 遵循 Apache 2.0 协议。
