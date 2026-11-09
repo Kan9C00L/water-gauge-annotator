@@ -84,6 +84,10 @@ flowchart LR
 - **自动保存**：直接读写本地文件夹，实时将结果保存为 LabelMe 格式的 JSON，无需手动导出。
 
 水下不可见区域识别：
+<div align="center">
+  <img src="./demo3.gif" alt="自动标注演示" width="70%">
+  <br><br>
+  <img src="./demo2.gif" alt="人工修正演示" width="70%">
 
 
 
