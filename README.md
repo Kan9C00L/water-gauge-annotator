@@ -6,64 +6,37 @@
 
 ```mermaid
 graph TD
-    A[🖼️ 导入水尺图像] --> B{选择标注方式}
-    
-    B -->|批量自动标注| C[YOLO11 目标检测]
-    B -->|点击自动识别| D[人工点击目标位置]
-    
-    C -->|输出 Bounding Box 提示框| E[SAM2.1 提示分割]
-    D -->|输入 Point 坐标提示| E
-    
-    E -->|生成高精度像素级 Polygon| F[前端 Canvas 交互引擎]
-    
-    F -->|交互操作| G[人工微调: 拖拽控制点 / 撤销 / 复制粘贴]
-    G --> H[自动保存本地]
-    
-    F --> H
-    
-    H -->|生成 LabelMe 格式 JSON| I[(本地数据集)]
-    I -.->|数据回流 用于下一轮训练| C
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style E fill:#bbf,stroke:#333,stroke-width:2px
-    style F fill:#dfd,stroke:#333,stroke-width:2px
-    style I fill:#ffd,stroke:#333,stroke-width:2px
+    A[导入图像] --> B{标注模式}
+    B -->|批量| C[YOLO11 检测]
+    B -->|点击| D[人工点击]
+    C -->|BBox 提示| E[SAM2.1 分割]
+    D -->|Point 提示| E
+    E -->|生成 Polygon| F[前端交互引擎]
+    F --> G[人工微调]
+    G --> H[保存 LabelMe JSON]
+    H --> I[(本地数据集)]
+    I -. 数据回流 .-> C
 ```
 
 ## 🔍 水下不可见区域识别原理
 ```mermaid
 graph TD
-    A[🖼️ 原始图像输入] --> B[降采样预处理<br/>最长边 ≤ 420 像素]
-    
-    B --> C[多维度像素特征提取]
-    C --> C1[亮度: 0.299R+0.587G+0.114B]
-    C --> C2[饱和度特征]
-    C --> C3[局部对比度/纹理]
-    
-    C1 & C2 & C3 --> D[多维风险评估模型加权累加]
-    
-    D --> D1[darkRisk 暗黑风险]
-    D --> D2[detailRisk 细节丢失风险]
-    D --> D3[hazeRisk 雾化风险]
-    D --> D4[edgeRisk 边缘暗角风险]
-    D --> D5[cornerRisk 四角盲区风险]
-    
-    D1 & D2 & D3 & D4 & D5 -->|综合评分公式计算| E{是否达到风险阈值?}
-    
-    E -->|是| F[掩膜形态学清理<br/>两次 3x3 闭运算]
-    E -->|否| J[忽略该区域]
-    
+    A[原始图像] --> B[降采样预处理]
+    B --> C[多维度特征提取]
+    C --> C1[亮度]
+    C --> C2[饱和度]
+    C --> C3[对比度]
+    C1 & C2 & C3 --> D[多维风险评估]
+    D --> D1[暗黑]
+    D --> D2[细节丢失]
+    D --> D3[雾化]
+    D --> D4[边缘暗角]
+    D --> D5[四角盲区]
+    D1 & D2 & D3 & D4 & D5 --> E{超过阈值?}
+    E -->|是| F[形态学清理]
     F --> G[连通域过滤与轮廓生成]
-    G --> G1[四邻域连通分析 & 剔除碎块]
-    G --> G2[边界追踪 & RDP 算法抽稀]
-    
-    G1 & G2 --> H[手动区域保护机制检查]
-    H -->|绕开已存在的手动标注| I[输出最终的 unknown 区域]
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style D fill:#ffd,stroke:#333,stroke-width:2px
-    style F fill:#bbf,stroke:#333,stroke-width:2px
-    style I fill:#dfd,stroke:#333,stroke-width:2px
+    G --> H[手动区域保护]
+    H --> I[输出不可见区域]
 ```
 针对水下船体图像中常见的**暗黑、欠曝光、低纹理、水体雾化**等无法可靠判断的区域，本项目设计了一套基于本地规则的传统 CV 自动识别引擎。该引擎在浏览器端纯前端运行，无需上传后端，实现了毫秒级的实时风险筛选。
 
