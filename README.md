@@ -178,7 +178,7 @@ uvicorn backend.main:app --host 127.0.0.1 --port 8010 --reload
 ### 训练配置
 - **Pretrained Weights**: yolo11n.pt (fine-tuned to n-scale)
 - **Optimizer**: AdamW (lr0≈0.00182, lr_f≈0.00182, weight_decay≈0.00053)
-- **Epochs**: 500 (patience=35)
+- **Epochs**: 300 (patience=35)
 - **Batch Size**: 16
 - **Device**: GPU
 - **Framework**: Ultralytics 8.4.90
