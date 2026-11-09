@@ -42,7 +42,34 @@
 
 ## 📦 模型权重下载
 请前往 [(https://github.com/Kan9C00L/water-gauge-annotator/releases/download/v1.0.0/yolo11_water_gauge.pt)] 页面下载 `yolo11_water_gauge.pt` 模型权重，并将其放置在项目根目录下。
-sam2.1模型可自行下载
+## 模型说明 / Model Details
+
+### 基础架构
+- **Model**: YOLO11n (Ultralytics)
+- **Task**: Object Detection
+- **Input Size**: 768×768
+- **Classes**: 11
+
+### 训练配置
+- **Pretrained Weights**: yolo11m.pt (fine-tuned to n-scale)
+- **Optimizer**: AdamW (lr0≈0.00182, lr_f≈0.00182, weight_decay≈0.00053)
+- **Epochs**: 500 (patience=35)
+- **Batch Size**: 16
+- **Device**: GPU
+- **Framework**: Ultralytics 8.4.90
+
+### 基准性能（YOLO11n 参考值）
+| Metric | Value |
+|---|---|
+| mAP@50-95 (COCO) | 39.5 |
+| Parameters | 2.6 M |
+| FLOPs | 6.5 G |
+| Inference (T4 TensorRT) | 1.5 ms |
+| Inference (CPU ONNX) | 56.1 ms |
+
+> 上述为 YOLO11n 官方基准数据。本自定义模型在特定水面尺数据集上的实际指标请参见 [评估结果 / Evaluation]。
+
+sam2.1分割模型可自行下载
 
 ## 📄 声明
 本项目仅供学习与研究使用。使用的 YOLO11 模型遵循 AGPL-3.0 协议，SAM2.1 遵循 Apache 2.0 协议。
