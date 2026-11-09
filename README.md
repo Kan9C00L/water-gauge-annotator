@@ -3,7 +3,18 @@
 这是一个基于 **YOLO11 目标检测** 与 **SAM2.1 提示分割** 的水尺自动标注、 水下不可见区域识别网页工具。
 
 ## 🏗️ 水尺识别系统架构
-<img width="1790" height="182" alt="fe54889c60c44955413f1c30ebb8c409" src="https://github.com/user-attachments/assets/f9d04a94-f120-48b2-b828-d322c7e66e67" />
+
+```mermaid
+flowchart LR
+    A[图片/文件夹] --> B[YOLO11 目标检测]
+    B -->|bbox + class| C[SAM2.1 提示分割]
+    A -->|点击点 prompt| C
+    C -->|polygon| D[LabelMe JSON]
+    D --> E[Web 标注复核]
+    E -->|人工修正/改名/删改点| D
+    E -->|修正后的数据| F[训练集回流]
+    F --> B
+```
 
 ## 🔍 水下不可见区域识别原理
 ```mermaid
