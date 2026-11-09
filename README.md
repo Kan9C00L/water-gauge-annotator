@@ -1,8 +1,10 @@
 # Water Gauge Auto-Annotation Studio (水尺辅助标注工具)
 
+这是一个基于 **YOLO11 目标检测** 与 **SAM2.1 提示分割** 的水尺自动标注网页工具。
+
 ## 🏗️ 系统架构
 
-``mermaid
+```mermaid
 flowchart LR
     A[图片/文件夹] --> B[YOLO11 目标检测]
     B -->|bbox + class| C[SAM2.1 提示分割]
@@ -12,6 +14,7 @@ flowchart LR
     E -->|人工修正/改名/删改点| D
     E -->|修正后的数据| F[训练集回流]
     F --> B
+
 
 这是一个基于 **YOLO11 目标检测** 与 **SAM2.1 提示分割** 的水尺自动标注网页工具。
 
