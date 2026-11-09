@@ -5,38 +5,52 @@
 ## 🏗️ 水尺识别系统架构
 
 ```mermaid
-graph TD
+graph LR
     A[导入图像] --> B{标注模式}
-    B -->|批量| C[YOLO11 检测]
-    B -->|点击| D[人工点击]
+    
+    B -->|批量自动| C[YOLO11 检测]
+    B -->|人工点击| D[人工点击]
+    
     C -->|BBox 提示| E[SAM2.1 分割]
     D -->|Point 提示| E
-    E -->|生成 Polygon| F[前端交互引擎]
+    
+    E --> F[前端交互]
     F --> G[人工微调]
-    G --> H[保存 LabelMe JSON]
+    G --> H[保存 JSON]
+    
     H --> I[(本地数据集)]
     I -. 数据回流 .-> C
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style E fill:#bbf,stroke:#333,stroke-width:2px
+    style F fill:#dfd,stroke:#333,stroke-width:2px
+    style I fill:#ffd,stroke:#333,stroke-width:2px
 ```
 
 ## 🔍 水下不可见区域识别原理
 ```mermaid
-graph TD
+graph LR
     A[原始图像] --> B[降采样预处理]
-    B --> C[多维度特征提取]
-    C --> C1[亮度]
-    C --> C2[饱和度]
-    C --> C3[对比度]
-    C1 & C2 & C3 --> D[多维风险评估]
-    D --> D1[暗黑]
-    D --> D2[细节丢失]
-    D --> D3[雾化]
-    D --> D4[边缘暗角]
-    D --> D5[四角盲区]
-    D1 & D2 & D3 & D4 & D5 --> E{超过阈值?}
+    
+    B --> C["特征提取<br/>(亮度/饱和/对比)"]
+    
+    C --> D["风险评估加权<br/>(暗黑/雾化/边缘/盲区)"]
+    
+    D --> E{超过阈值?}
+    
     E -->|是| F[形态学清理]
-    F --> G[连通域过滤与轮廓生成]
-    G --> H[手动区域保护]
-    H --> I[输出不可见区域]
+    E -->|否| J[忽略]
+    
+    F --> G[连通域过滤]
+    
+    G --> H[手动保护机制]
+    
+    H --> I[输出 unknown]
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style D fill:#ffd,stroke:#333,stroke-width:2px
+    style F fill:#bbf,stroke:#333,stroke-width:2px
+    style I fill:#dfd,stroke:#333,stroke-width:2px
 ```
 针对水下船体图像中常见的**暗黑、欠曝光、低纹理、水体雾化**等无法可靠判断的区域，本项目设计了一套基于本地规则的传统 CV 自动识别引擎。该引擎在浏览器端纯前端运行，无需上传后端，实现了毫秒级的实时风险筛选。
 
