@@ -6,7 +6,41 @@
 <img width="1790" height="182" alt="fe54889c60c44955413f1c30ebb8c409" src="https://github.com/user-attachments/assets/f9d04a94-f120-48b2-b828-d322c7e66e67" />
 
 ## 🔍 水下不可见区域识别原理
-
+```mermaid
+flowchart TD
+    A([输入原始图像]) --> B[降采样缩放至 Max 420px]
+    B --> C[遍历像素点提取特征]
+    
+    C --> D1[亮度 Luminance]
+    C --> D2[饱和度 Saturation]
+    C --> D3[局部对比度 Contrast]
+    
+    D1 --> E[多维风险评估打分]
+    D2 --> E
+    D3 --> E
+    
+    E --> F{风险分 >= 阈值?}
+    
+    F -- 是 --> G[生成二值化风险掩膜]
+    F -- 否 --> H([忽略该像素])
+    
+    G --> I[形态学处理: 3x3 闭运算去噪]
+    I --> J[四邻域连通域分析]
+    J --> K[过滤小于 '最小区域' 的碎块]
+    
+    K --> L[边界追踪提取外轮廓]
+    L --> M[RDP 算法简化多边形]
+    M --> N[限制最大点数抽稀]
+    
+    N --> O[与手动标注保护区求差]
+    O --> P([输出 Unknown 多边形 JSON])
+    
+    style A fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style P fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style E fill:#ffe6e6,stroke:#d9534f,stroke-width:2px
+    style I fill:#e6f3ff,stroke:#337ab7,stroke-width:2px
+    style M fill:#e6f3ff,stroke:#337ab7,stroke-width:2px
+```
 针对水下船体图像中常见的**暗黑、欠曝光、低纹理、水体雾化**等无法可靠判断的区域，本项目设计了一套基于本地规则的传统 CV 自动识别引擎。该引擎在浏览器端纯前端运行，无需上传后端，实现了毫秒级的实时风险筛选。
 
 核心算法流程如下：
