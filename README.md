@@ -88,7 +88,7 @@ flowchart LR
   <img src="./demo3.gif" alt="自动标注演示" width="70%">
   <br><br>
   <img src="./demo2.gif" alt="人工修正演示" width="70%">
-
+</div>
 
 
 水尺识别：
