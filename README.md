@@ -29,23 +29,30 @@ graph LR
 
 ## 🔍 水下不可见区域识别原理
 ```mermaid
-graph LR
+graph TD
     A[原始图像] --> B[降采样预处理]
+    B --> C[特征提取]
     
-    B --> C["特征提取<br/>(亮度/饱和/对比)"]
+    C --> C1[亮度]
+    C --> C2[饱和度]
+    C --> C3[局部对比度]
     
-    C --> D["风险评估加权<br/>(暗黑/雾化/边缘/盲区)"]
+    C1 & C2 & C3 --> D[多维风险评估]
     
-    D --> E{超过阈值?}
+    D --> D1[暗黑风险]
+    D --> D2[细节丢失]
+    D --> D3[雾化风险]
+    D --> D4[边缘暗角]
+    D --> D5[四角盲区]
+    
+    D1 & D2 & D3 & D4 & D5 --> E{达到阈值?}
     
     E -->|是| F[形态学清理]
     E -->|否| J[忽略]
     
-    F --> G[连通域过滤]
-    
-    G --> H[手动保护机制]
-    
-    H --> I[输出 unknown]
+    F --> G[连通域与轮廓处理]
+    G --> H[手动区域保护检查]
+    H --> I[输出 unknown 区域]
 
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style D fill:#ffd,stroke:#333,stroke-width:2px
