@@ -58,14 +58,7 @@
 - **Device**: GPU
 - **Framework**: Ultralytics 8.4.90
 
-### 基准性能（YOLO11n 参考值）
-| Metric | Value |
-|---|---|
-| mAP@50-95 (COCO) | 39.5 |
-| Parameters | 2.6 M |
-| FLOPs | 6.5 G |
-| Inference (T4 TensorRT) | 1.5 ms |
-| Inference (CPU ONNX) | 56.1 ms |
+
 
 > 上述为 YOLO11n 官方基准数据。本自定义模型在特定水面尺数据集上的实际指标请参见 [评估结果 / Evaluation]。
 
