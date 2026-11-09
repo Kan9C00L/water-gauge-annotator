@@ -167,7 +167,7 @@ uvicorn backend.main:app --host 127.0.0.1 --port 8010 --reload
 
 ## 📦 模型权重下载
 请前往 [(https://github.com/Kan9C00L/water-gauge-annotator/releases/download/v1.0.0/yolo11_water_gauge.pt)] 页面下载 `yolo11_water_gauge.pt` 模型权重，并将其放置在项目根目录下。
-## 模型说明 / Model Details
+
 
 ### 基础架构
 - **Model**: YOLO11m (Ultralytics)
