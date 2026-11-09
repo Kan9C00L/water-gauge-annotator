@@ -36,9 +36,30 @@
 - **数据格式**：LabelMe JSON
 
 ## 🚀 如何运行
-1. 准备好 Python 环境，安装依赖：`pip install ultralytics fastapi uvicorn`
-2. 启动后端服务（需自行加载训练好的 YOLO11 权重与 SAM2.1 模型）。
-3. 双击打开 `index.html` 即可在浏览器中标注。
+1. 环境准备
+请准备好 Python 环境（推荐 3.9 及以上版本），在项目根目录下安装所需的依赖库：
+
+bash
+pip install ultralytics fastapi uvicorn opencv-python numpy python-multipart pillow
+
+2. 权重与模型准备
+YOLO11 检测权重：将本项目提供的 yolo11n_water_gauge.pt 放入后端指定目录（例如 backend/weights/）。
+
+SAM2.1 分割模型：请自行下载 SAM2.1 权重（如 sam2.1_hiera_tiny.pt），并按照后端代码的配置路径放置。
+
+3. 启动 Web 标注工具
+本工具通过 YOLO 进行目标框选，结合 SAM2.1 进行边缘精细化分割。
+
+第一步：启动后端服务
+
+在项目根目录下，打开终端执行以下命令（服务默认运行在 8010 端口）：
+
+bash
+uvicorn backend.main:app --host 127.0.0.1 --port 8010 --reload
+第二步：启动前端
+
+后端启动成功后，直接双击打开项目中的前端文件 index.html，即可在浏览器中开始高效标注。
+
 
 ## 📦 模型权重下载
 请前往 [(https://github.com/Kan9C00L/water-gauge-annotator/releases/download/v1.0.0/yolo11_water_gauge.pt)] 页面下载 `yolo11_water_gauge.pt` 模型权重，并将其放置在项目根目录下。
