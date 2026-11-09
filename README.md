@@ -3,20 +3,7 @@
 这是一个基于 **YOLO11 目标检测** 与 **SAM2.1 提示分割** 的水尺自动标注网页工具。
 
 ## 🏗️ 系统架构
-
-```mermaid
-flowchart LR
-    A[图片/文件夹] --> B[YOLO11 目标检测]
-    B -->|bbox + class| C[SAM2.1 提示分割]
-    A -->|点击点 prompt| C
-    C -->|polygon| D[LabelMe JSON]
-    D --> E[Web 标注复核]
-    E -->|人工修正/改名/删改点| D
-    E -->|修正后的数据| F[训练集回流]
-    F --> B
-```
-
-
+<img width="1790" height="182" alt="fe54889c60c44955413f1c30ebb8c409" src="https://github.com/user-attachments/assets/f9d04a94-f120-48b2-b828-d322c7e66e67" />
 
 ## 💡 项目背景与方案优势
 水尺图像标注需要极高的像素级精度，传统人工绘制耗时费力。本项目采用**“高效检测 + 大模型分割”**的两阶段策略，在约 3000 张规模的数据集上实现了极高的标注效率：
@@ -42,7 +29,7 @@ flowchart LR
 - **点击自动识别**：点击图片目标位置，SAM 生成区域，YOLO11 识别类别。
 - **灵活的人工编辑**：支持拖拽控制点、线框吸附、撤销/重做、删除、复制粘贴。
 - **自动保存**：直接读写本地文件夹，实时将结果保存为 LabelMe 格式的 JSON，无需手动导出。
-<img width="1790" height="182" alt="fe54889c60c44955413f1c30ebb8c409" src="https://github.com/user-attachments/assets/f9d04a94-f120-48b2-b828-d322c7e66e67" />
+
 
 ![演示效果](./demo.gif)
 
